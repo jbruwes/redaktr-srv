@@ -16,7 +16,10 @@ module.exports = {
 					return;
 				}
 			},
-			node = pNode ? pNode : findNode(fileId, tree, '');
+			node = pNode ? pNode : findNode(fileId, tree, ''),
+			ddInit = (index, phref, pid) => {
+				return '<div>test</div>';
+			};
 		if (node) {
 			var path = node.path;
 			path = path.split('/');
@@ -35,7 +38,8 @@ module.exports = {
 					});
 					callback(err);
 				} else {
-					var html = value[2].Body.toString(),
+					var menu = ddInit(),
+						html = value[2].Body.toString(),
 						mhtml = '<!DOCTYPE html>' +
 						'<html>' +
 						'<head>' +
@@ -106,6 +110,16 @@ module.exports = {
 					mhtml[1] = mhtml[1] + html[2].split(/\s*(<\/head>)\s*/)[0];
 					html = html.join('').replace(/>(\s{1,}|\t{1,}|[\n\r]{1,})</gm, "><").replace(/^\s*$[\n\r]{1,}/gm, '');
 					mhtml = mhtml.join('').replace(/>(\s{1,}|\t{1,}|[\n\r]{1,})</gm, "><").replace(/^\s*$[\n\r]{1,}/gm, '');
+
+					html = html.split(/(<div class=\"header item\"><\/div>)/);
+					mhtml = mhtml.split(/(<div class=\"header item\"><\/div>)/);
+					buf = node.title ? node.title : node.value;
+					buf = buf.replace(/"/g, "&quot;");
+					html[1] = '<div class="header item">' + buf + '</div>';
+					mhtml[1] = '<div class="header item">' + buf + '</div>';
+					html = html.join('').replace(/>(\s{1,}|\t{1,}|[\n\r]{1,})</gm, "><").replace(/^\s*$[\n\r]{1,}/gm, '');
+					mhtml = mhtml.join('').replace(/>(\s{1,}|\t{1,}|[\n\r]{1,})</gm, "><").replace(/^\s*$[\n\r]{1,}/gm, '');
+
 					html = html.split(/(<[^>]+id=\"content\".*>)(<main><\/main>)(<[^>]+>)/);
 					mhtml = mhtml.split(/(<[^>]+id=\"content\".*>)(<main><\/main>)(<[^>]+>)/);
 					if (html.length === 1) html = html[0].split(/(<[^>]+id=\"content\".*>)(<div><\/div>)(<[^>]+>)/);
