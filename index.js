@@ -22,30 +22,30 @@ http
       console.log("content-type =", contentType);
       console.log("key =", key);
       console.log("id =", id);
-        Promise.all([s3.getObject({Bucket: 'redaktr', Key: 'redaktr.json'}).promise(),
-        s3.getObject({
-                Bucket: 'redaktr',
-                Key: id + '.json',
-        }).promise(), s3.getObject({
-                Bucket: 'redaktr',
-                Key: id + '.html'
-        }).promise()]).then(value => {
-                let buf = JSON.parse(value[0].Body).find((element,index,array)=>{if(element.id===id)return true;});
-                value[0] = {};
-                value[0].Item = buf;
-                console.log(value);
-                switch(contentType) {
-                        case "application/json":
-                        kharon.main(value, id, key, s3, _ => {console.log('kharon done.')});
-                        break;
-                        case "text/html":
-                        if(id + '.html' === key)hermes.main(value, id, key, s3, _ => {console.log('hermes done.')});
-                        else html.main(value, id, key, s3, _ => {console.log('html done.')});
-                        break;
-                }
-        }).catch(err => {
-                console.log(err);
-        });
+	Promise.all([s3.getObject({Bucket: 'redaktr', Key: 'redaktr.json'}).promise(),
+	s3.getObject({
+		Bucket: 'redaktr',
+		Key: id + '.json',
+	}).promise(), s3.getObject({
+		Bucket: 'redaktr',
+		Key: id + '.html'
+	}).promise()]).then(value => {
+		let buf = JSON.parse(value[0].Body).find((element,index,array)=>{if(element.id===id)return true;});
+		value[0] = {};
+		value[0].Item = buf;
+		console.log(value);
+		switch(contentType) {
+			case "application/json":
+			kharon.main(value, id, key, s3, _ => {console.log('kharon done.')});
+			break;
+			case "text/html":
+			if(id + '.html' === key)hermes.main(value, id, key, s3, _ => {console.log('hermes done.')});
+			else html.main(value, id, key, s3, _ => {console.log('html done.')});
+			break;
+		}
+	}).catch(err => {
+		console.log(err);
+	});
     });
     res.end();
   })
